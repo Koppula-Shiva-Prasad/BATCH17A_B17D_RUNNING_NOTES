@@ -1,0 +1,117 @@
+ANSIBLE:
+
+1. INSTALL ANSIBLE ON CONTROL/ MASTER SERVER
+2. SETUP SSH PASSWORD LESS AUTHENTICATION TO ALL WORKER NODES / CLIENT SERVERS
+
+( WATCH CLASS RECORDING FOR DETAILED EXPLANATION- how to generate sshkeys.. etc  ) 
+
+=============================================================================================
+SETUP ANSIBLE PRATICE FOLDER AND CREATE A Inventory / host file  
+ 
+ 
+cd /opt/
+sudo vim inventory 
+ 
+[appservers]
+172.31.37.67
+#2.3.4.5
+
+[dbservers]
+172.31.35.163
+172.31.19.64
+
+[util]
+#1.2.3.4
+
++===================================================
+AD-HOC COMMANDS: 
+
+WITH LINUX : 
+
+ping
+user 
+file
+yum
+service
+
+  ansible -i /opt/inventory all -m ping
+  ansible -i /opt/inventory all -b -a "touch /opt/madhu"
+  ansible -i /opt/inventory all -b -a "mkdir /opt/kiran"
+  ansible -i /opt/inventory appservers -b -a "mkdir /opt/mc"
+  ansible -i /opt/inventory dbservers -b -a "mkdir /opt/mysqldb"
+  ansible -i /opt/inventory all -b -a "ls -lrth /opt"
+  ansible -i /opt/inventory 172.31.20.99 -b -a "touch /opt/node2"
+  ansible -i /opt/inventory all -b -a "ls -lrth /opt"
+  ansible -i /opt/inventory all -b -a "useradd madhu"
+  ansible -i /opt/inventory all -b -a "tail -3 /etc/passwd"
+  ansible -i /opt/inventory appservers -b -a "useradd mcuser"
+  ansible -i /opt/inventory dbservers -b -a "useradd dbuser"
+  ansible -i /opt/inventory all -b -a "tail -3 /etc/passwd"
+  ansible -i /opt/inventory all -b -a "userdel -r dbuser"
+  ansible -i /opt/inventory all -b -a "rm -rf /opt/madhu"
+  ansible -i /opt/inventory all -b -a "rm  /opt/madhu"
+  ansible -i /opt/inventory all -b -a "touch /opt/madhu"
+  ansible -i /opt/inventory all -b -a "mkdir /opt/madhu"
+  ansible -i /opt/inventory all -b -a "mkdir /opt/bach16"
+  ansible -i /opt/inventory all -b -a "useradd b16user"
+
+==============================================
+AD-HOC COMMANDS: 
+USING MODULES:
+
+jenkins 
+
+Ansible modules are small programs that do specific tasks on remote machines — safely, automatically, and repeatedly without causing errors.
+
+1. Modules are Idempotent — Linux commands are NOT
+2. Modules understand system state — Linux commands don’t - Modules check before doing anything- Linux commands always execute blindly.
+3. Modules return structured JSON data — Linux commands just print text
+4. Modules are safer — Linux commands may break the system
+
+
+ansible all  -b -a "useradd mounika1"
+ansible all -m user -b -a "state=present name=mounika2 "
+
+ansible all -m copy -b -a "src=path/of/file dest=/path"
+
+ansible all -m yum -b -a "name=git"
+ansible all -m yum -b -a "name=git state=preasent"
+
+ansible all -a "yum install git -y" -b
+ansible all -b -a "yum install git -y"
+
+ansible all -m yum -b -a "name=git state=present"
+
+ansible all -m yum -b -a "name=git state=absent"
+
+ansible all -b -a "yum remove git -y"
+
+ansible all -m yum -b -a "name=httpd state=present"
+
+ansible all -m service -b -a "name=httpd state=started"
+
+ansible all -b -a "service httpd start"
+
+ansible devops -b -a "service httpd start"
+ansible all -m service -b -a "name=httpd state=started"
+Ex: reloaded, restarted, started, stopped
+
+
+ansible all -m yum -b -a "name=java state=latest"
+
+ansible all -b -a "useradd user1"
+
+ansible all -m user -b -a "name=alekhya state=present"
+
+ansible devops -b -a "userdel user1"
+
+ansible all -m user -b -a "name=alekhya state=absent"
+
+ansible all -b -a "mkdir /opt/ooooo1"
+
+ansible all -b -a "touch /opt/abc"
+
+/
+ansible all -m file -b -a "path=/opt/k8s state=touch"
+
+ansible all -m file -b -a "path=/opt/456dir state=directory"
