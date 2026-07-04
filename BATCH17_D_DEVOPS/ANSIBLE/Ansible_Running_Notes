@@ -115,3 +115,212 @@ ansible all -b -a "touch /opt/abc"
 ansible all -m file -b -a "path=/opt/k8s state=touch"
 
 ansible all -m file -b -a "path=/opt/456dir state=directory"
+
+
+================================================================================
+
+
+
+DATE: 4 JULY 2026
+
+
+Configuring httpd using ansible adhoc commands:
+
+ansible -i /opt/inventory all -b -m yum -a "name=httpd state=present"
+ansible -i /opt/inventory all -b -m service -a "name=httpd state=started"
+ansible -i /opt/inventory all -b -m copy -a "src= /opt/index.html  dest=/var/www/html/index.html"
+======================
+
+
+PLAYBOOK: 
+An Ansible Playbook is a set of instructions written in YAML that tells Ansible what tasks to run on which servers.
+
+A playbook consists of plays, and a play consists of tasks.
+
+It uses configuration files called Playbooks written in YAML. 
+
+Ansible modules are standalone scripts that can be used inside an Ansible playbook. . 
+
+yaml - one of the data structure format to represent data .
+       yaml file is used to represent data , in our case ansible configuration data
+
+for ex : 
+
+server details :
+
+ser1
+name = prod 
+owner = madhu 
+os    = linux 
+daate = 4/7/2026
+
+
+ser2
+name = lab 
+owner = kiran 
+os    = windows 
+daate = 4/7/2026
+
+---> yaml / xml / json 
+====================================
+server:
+  name: prod
+  owner: madhu
+  os: linux
+  date: "4/7/2026"
+  
+  ==========================
+  
+  
+servers:
+  - id: ser1
+    os: linux
+    date: "4/7/2026"
+	name: prod
+    owner: madhu
+
+  - id: ser2
+    name: lab
+    owner: kiran
+    os: windows
+    date: "4/7/2026"
+	
+======================
+
+
+Diff b/w  XML  VS JSON VS YAML FORMATS :
+
+-----------------------------------
+ways to Representation of Data in YAML :
+
+-------------
+key-value pair 
+
+name = mcserver1
+owner = madhu
+
+name: mcserver1
+owner: madhu
+-------------------
+Array/ List - 
+
+- java 
+- c 
+- go 
+
+Fruits:
+
+- apple
+- grape 
+- banana
+- Orange:   
+   Calories: 50
+   Fat: 0.1 g
+   Carbs: 5g
+
+-------------------
+
+Dictionary - Set of properties , grouped together
+
+Orange:   
+   Calories: 50
+   Carbs: 5g
+   Fat: 0.1 g
+   
+   
+make sure we are giving spaces properly 
+ - equal no of spaces 
+==============================================================
+What is gathering facts?
+
+Automatic collection of system information before running tasks.
+Facts" are pieces of information Ansible collects about the managed host, such as:
+
+OS version
+IP addresses
+Hostname
+CPU, RAM
+Network interfaces
+Python path
+Distribution family (RedHat, Debian, etc.)
+Kernel version
+
+==============================
+ cat /opt/playbooks/httpd_setup.yaml
+
+
+---
+- name: Install and Configure Apache HTTP Server
+  hosts: appservers
+  become: yes
+
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start and enable httpd service  ## systemctl start httpd && systemctl enable httpd 
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Deploy index.html
+      copy:
+        src: /opt/index.html
+        dest: /var/www/html/index.html
+      tags: copy_index
+=================================================================================
+
+--limit 
+
+In Ansible, --limit is a command-line option used with ansible-playbook (and other Ansible commands) to restrict execution to a subset of hosts from your inventory, even if the playbook targets a larger group.
+
+ansible-playbook playbook.yml --limit <host-pattern>
+
+1. Run on a single host
+ansible-playbook site.yml --limit serv1
+ansible-playbook site.yml --limit "srv1,srv2"
+
+
+Why use --limit?
+✅ Test changes on a single server before rolling them out.
+✅ Perform maintenance on specific hosts.
+✅ Retry failed hosts.
+✅ Reduce execution time during debugging.
+
+
+===================================================================
+
+--tags
+
+--tags is an Ansible command-line option that allows you to run only the tasks that have specific tags. It's useful when you don't want to execute an entire playbook.
+
+ansible-playbook playbook.yml --tags <tag_name>
+
+ansible-playbook -i /opt/inventory  httpd_setup.yaml --tags=copy_index
+
+===================================
+--skilp-tags
+
+--skip-tags is an Ansible command-line option that tells Ansible to skip tasks that have the specified tag(s) while running all other tasks.
+
+ansible-playbook playbook.yml --skip-tags <tag_name>
+
+ansible-playbook -i /opt/inventory  httpd_setup.yaml --skip-tags=copy_index
+
+===================
+ HOW TO DO CONF AUTOMATION ON  MASTER SERVER IN ANSBLE  ??
+ 
+ setup ssh pasword less authentication from master - master 
+
+Yes, you can automate configuration on the Ansible control node (master server) itself. There are several ways to do it depending on your setup.
+
+- Add localhost (or the server's hostname/IP) to the inventory:
+
+- Add the public key (~/.ssh/id_rsa.pub ) to the control node's ~/.ssh/authorized_keys:
+
+- Verify passwordless SSH: ---> ssh localhost
+=====================
+
